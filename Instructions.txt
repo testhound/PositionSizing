@@ -1,0 +1,10 @@
+#### Instructions(Commands)
+##1. run_price_size_analysis(self, portfolio=5000)  TO RUN PRICE SIZE ANALYSIS OVER SYMBOL LIST
+#    ### python PriceSizeApp.py --inputf='Symbols.csv' run_price_size_analysis
+# OR ### python PriceSizeApp.py --inputf='Symbols.csv' run_price_size_analysis 5000
+# OR ### python PriceSizeApp.py --inputf='Symbols.csv' run_price_size_analysis --portfolio=5000
+#    ###
+#    ### python PriceSizeApp.py --inputf='sym_small.csv' run_price_size_analysis
+# OR ### python PriceSizeApp.py --inputf='sym_small.csv' run_price_size_analysis 5000
+# OR ### python PriceSizeApp.py --inputf='sym_small.csv' run_price_size_analysis --portfolio=5000
+#    ###
