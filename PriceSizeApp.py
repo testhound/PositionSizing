@@ -1,21 +1,24 @@
-import pandas as pd
 import numpy as np
-import math
-import datetime
-import time
-import dateutil.relativedelta
+import pandas as pd
 import os
 import fire
 
+from AlphaVantageProvider import AlphaVantageProvider
+from BarChartProvider import BarChartProvider
+
 class PriceSizeApp:
     def __init__(self,inputf):
-        self.API_KEY = 'T133DFH1BDEC1EPU'  # replace demo with your api key
-        self.BASE_URL = 'https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY_EXTENDED'
-        self.BASE_URL_Rec = 'https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY'
+        self.ALPHAVANTAGE_API_KEY = 'T133DFH1BDEC1EPU'  # replace demo with your api key
+        self.BARCHART_API_KEY = "9bff8ed715c16109a1ce5c63341bb860"
         self.dirP = "Results/"
         self.create_dirs()
         self.s_list = self.read_symbols(inputf)
         self.df_summary = self.create_summary_df()
+
+        self.period = 90
+        self.interval = "daily"
+        self.data_provider = AlphaVantageProvider(self.ALPHAVANTAGE_API_KEY)
+        self.data_provider = BarChartProvider(self.BARCHART_API_KEY)
 
     def create_dirs(self):
         if not os.path.exists(os.path.dirname(self.dirP)):
@@ -30,51 +33,12 @@ class PriceSizeApp:
         s_list = df_symbols["Symbol"].str.strip()
         return s_list
 
-    def get_latest_atr(self, symbol):
-        interval = "daily"
-        period = 90
-        base_url = 'https://www.alphavantage.co/query?function=ATR&'
-        url = base_url + \
-            f"symbol={symbol}&interval={interval}&time_period={period}&apikey={self.API_KEY}&datatype=csv"
-        df_atr = pd.read_csv(url)
-        # print(df_atr.loc[0])
-        if len(df_atr) <= 2:
-            a = df_atr.loc[0].to_json()
-            print(a)
-            if a.count("Thank you") == 1:
-                print("------taking a pause for 1 minute-----")
-                time.sleep(60)
-                return self.get_latest_atr(symbol)
-            else:
-                print(
-                    f"Incorrect API Key or Symbol = {symbol} is not compatible")
-                return 0
-        return df_atr.loc[0].ATR
-
-    def get_current_close(self, symbol, barsize):
-        url_rec = self.BASE_URL_Rec + \
-            f'&symbol={symbol}&interval={barsize}min&apikey={self.API_KEY}&datatype=csv'
-        df_rec = pd.read_csv(url_rec)
-
-        if len(df_rec) <= 2:
-            a = df_rec.loc[0].to_json()
-            print(a)
-            if a.count("Thank you") == 1:
-                print("------taking a pause for 1 minute-----")
-                time.sleep(60)
-                return self.get_current_close(symbol, barsize)
-            else:
-                print(
-                    f"Incorrect API Key or Symbol = {symbol} is not compatible")
-                return 0, 0
-        else:
-            return df_rec.loc[0].timestamp, df_rec.loc[0].close
-
     def generate_summary(self, portfolio):
         df_dummy = self.df_summary.copy()
         for sym in self.s_list:
-            atr = self.get_latest_atr(sym)
-            close = self.get_current_close(sym, 5)[1]
+            atr = self.data_provider.get_latest_atr(sym, self.interval, self.period)
+            # print(sym, atr)
+            close = self.data_provider.get_current_close(sym, 5)[1]
             df_dummy.at[len(df_dummy)] = [sym, atr, close]
 
         df_dummy['atr_inv'] = 1/df_dummy['ATR']
