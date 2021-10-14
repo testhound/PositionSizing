@@ -6,7 +6,6 @@ class BarChartProvider(DataProvider):
     def __init__(self, api_key):
         super(BarChartProvider, self).__init__(api_key)
         self.base_url = f"https://ondemand.websol.barchart.com/getHistory.csv?apikey={self.apikey}"
-        # self.ondemand = Client('https://ondemand.websol.barchart.com/service?wsdl')
 
     def __calculate_tr(self, high, low, previous_close):
         tr = high - low if (high - low) > (high - previous_close) else (high - previous_close)
@@ -54,8 +53,4 @@ if __name__ == '__main__':
     provider = BarChartProvider("9bff8ed715c16109a1ce5c63341bb860")
     for i in range(1, 90):
         print(i, provider.get_latest_atr("NFLX", "daily", 90, i, i))
-    # print(provider.get_current_close("INTC", 5))
-
-    # qqq - ema: 61 and 7, sma: 73
-    # aapl - ema: 30, sma: 37           # 61 was ok
-    # 
+    print(provider.get_current_close("INTC", 5))

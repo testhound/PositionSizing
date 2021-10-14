@@ -8,7 +8,6 @@ from BarChartProvider import BarChartProvider
 
 class PriceSizeApp:
     def __init__(self,inputf):
-        self.ALPHAVANTAGE_API_KEY = 'T133DFH1BDEC1EPU'  # replace demo with your api key
         self.BARCHART_API_KEY = "9bff8ed715c16109a1ce5c63341bb860"
         self.dirP = "Results/"
         self.create_dirs()
@@ -17,7 +16,6 @@ class PriceSizeApp:
 
         self.period = 90
         self.interval = "daily"
-        self.data_provider = AlphaVantageProvider(self.ALPHAVANTAGE_API_KEY)
         self.data_provider = BarChartProvider(self.BARCHART_API_KEY)
 
     def create_dirs(self):
